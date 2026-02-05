@@ -2,14 +2,19 @@ import { useState } from "react";
 import allQuestions from "./data/questions";
 import "./App.css";
 import correctSound from "./assets/yay.mp3";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import DecisionPreferenceForm from "./DecisionPreferenceForm";
+
 
 function App() {
   function getGameQuestions() {
     return [...allQuestions].sort(() => Math.random() - 0.5).slice(0, 5);
   }
 
-  const [screen, setScreen] = useState("home"); // home | game | result
-  const [gameQuestions, setGameQuestions] = useState(getGameQuestions);
+  const [screen, setScreen] = useState("home"); // home | game | result | settings
+  const [numQuestions, setNumQuestions] = useState(5);
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [gameQuestions, setGameQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
   const correctAudio = new Audio(correctSound);
@@ -18,7 +23,23 @@ function App() {
   const currentQuestion = gameQuestions[currentIndex];
 
   function startGame() {
-    setGameQuestions(getGameQuestions());
+    const questions = [...allQuestions]
+      .sort(() => Math.random() - 0.5)
+      .slice(0, numQuestions);
+    setGameQuestions(questions);
+    setCurrentIndex(0);
+    setScore(0);
+    setScreen("game");
+  }
+
+  function handleConfigSubmit(settings) {
+    setNumQuestions(settings.numQuestions);
+    setSoundEnabled(settings.soundEnabled);
+    // Start game immediately with these settings
+    const questions = [...allQuestions]
+      .sort(() => Math.random() - 0.5)
+      .slice(0, settings.numQuestions);
+    setGameQuestions(questions);
     setCurrentIndex(0);
     setScore(0);
     setScreen("game");
@@ -30,8 +51,10 @@ function App() {
     if (isCorrect) {
       setScore(score + 1);
 
-      correctAudio.currentTime = 0;
-      correctAudio.play();
+      if (soundEnabled) {
+        correctAudio.currentTime = 0;
+        correctAudio.play();
+      }
     }
 
 
@@ -61,9 +84,14 @@ function App() {
             <p className="purpose">
               Tap Start Game to begin practicing simple decisions with fun pictures and questions
             </p>
-            <button className="restart-btn" onClick={startGame}>
-              Start Game ▶
-            </button>
+            <div className="button-stack">
+              <button className="restart-btn" onClick={startGame}>
+                Start Game ▶
+              </button>
+              <button className="home-btn" onClick={() => setScreen("settings")}>
+                Game Settings 
+              </button>
+            </div>
 
           </div>
 
@@ -139,6 +167,20 @@ function App() {
         <footer className="app-footer">
           <p>&copy; 2026 Sanjana Madhavan. All rights reserved.</p>
         </footer>
+      </div>
+    );
+  }
+
+  if (screen === "settings") {
+    return (
+      <div className="app-container">
+        <DecisionPreferenceForm
+          onStart={handleConfigSubmit}
+          totalAvailableQuestions={allQuestions.length}
+        />
+        <button className="home-btn" onClick={() => setScreen("home")}>
+          Back to Home 🏠
+        </button>
       </div>
     );
   }
