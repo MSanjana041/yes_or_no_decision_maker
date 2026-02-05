@@ -2,6 +2,8 @@ import { useState } from "react";
 import allQuestions from "./data/questions";
 import "./App.css";
 import correctSound from "./assets/yay.mp3";
+import boy1 from "./assets/boy1.webp";
+import boy2 from "./assets/boy2.webp";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import DecisionPreferenceForm from "./DecisionPreferenceForm";
 
@@ -73,7 +75,7 @@ function App() {
         <div style={{ display: "flex", alignItems: "center", gap: "50px" }}>
 
           <img
-            src="/boy1.webp"
+            src={boy1}
             alt="left decoration"
             className="side-image"
           />
@@ -89,14 +91,14 @@ function App() {
                 Start Game ▶
               </button>
               <button className="home-btn" onClick={() => setScreen("settings")}>
-                Game Settings 
+                Game Settings
               </button>
             </div>
 
           </div>
 
           <img
-            src="/boy2.webp"
+            src={boy2}
             alt="right decoration"
             className="side-image"
           />
